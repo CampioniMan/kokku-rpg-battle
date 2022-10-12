@@ -32,12 +32,10 @@ namespace AutoBattle
 			
 			// Making the first one to move be random
 			allPlayers = allPlayers.Shuffle();
-			
-			// starts the game
-			grid.DrawBattlefield();
 
 			do
 			{
+				grid.DrawBattlefield();
 				foreach (var character in allPlayers)
 				{
 					character.StartTurn(grid);
@@ -50,7 +48,7 @@ namespace AutoBattle
 			void WaitInputToNextTurn()
 			{
 				Console.Write(Environment.NewLine + Environment.NewLine);
-				Console.WriteLine($"Click on any key to start the next turn...{Environment.NewLine}");
+				Console.WriteLine($"Click on any key to start the next turn (currently on {currentTurn})...{Environment.NewLine}");
 				Console.Write(Environment.NewLine + Environment.NewLine);
 				_ = Console.ReadKey();
 			}
@@ -69,8 +67,10 @@ namespace AutoBattle
 				Console.WriteLine($"Choose Between One of this Classes:{Environment.NewLine}");
 				Console.WriteLine("[1] Paladin, [2] Warrior, [3] Cleric, [4] Archer");
 				//store the player choice in a variable
-				var hasParsed = int.TryParse(Console.ReadLine(), out var choice);
-				if (!hasParsed) continue;
+				var typedClass = Console.ReadLine();
+				
+				var hasParsed = uint.TryParse(typedClass, out var choice);
+				if (string.IsNullOrEmpty(typedClass) || !hasParsed) continue;
 				
 				var isValueDefined = Enum.IsDefined(typeof(CharacterClass), choice);
 				if (!isValueDefined) continue;
