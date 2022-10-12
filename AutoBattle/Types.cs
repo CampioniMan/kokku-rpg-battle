@@ -1,6 +1,6 @@
 ﻿namespace AutoBattle
 {
-	public class Types
+	public static class Types
 	{
 		public struct CharacterClassSpecific
 		{
@@ -8,20 +8,19 @@
 			float _hpModifier;
 			float _classDamage;
 			CharacterSkills[] _skills;
-
 		}
 
-		public struct GridBox
+		public class GridBox
 		{
-			public int XIndex;
-			public int YIndex;
+			public int lineIndex;
+			public int columnIndex;
 			public bool Occupied;
 			public int Index;
 
-			public GridBox(int x, int y, bool occupied, int index)
+			public GridBox(int line, int column, bool occupied, int index)
 			{
-				XIndex = x;
-				YIndex = y;
+				lineIndex = line;
+				columnIndex = column;
 				Occupied = occupied;
 				Index = index;
 			}
@@ -41,6 +40,5 @@
 			Cleric = 3,
 			Archer = 4
 		}
-
 	}
 }

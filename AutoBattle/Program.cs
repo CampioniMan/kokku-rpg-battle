@@ -1,6 +1,4 @@
 ﻿using System;
-using static AutoBattle.Character;
-using static AutoBattle.Grid;
 using System.Collections.Generic;
 using System.Linq;
 using static AutoBattle.Types;
@@ -24,8 +22,8 @@ namespace AutoBattle
 			enemyCharacter.Target = playerCharacter;
 			playerCharacter.Target = enemyCharacter;
 			
-			playerCharacter.CurrentBox = GetAvailablePositionFromGrid(grid);
-			enemyCharacter.CurrentBox = GetAvailablePositionFromGrid(grid);
+			PutPlayerInAvailablePositionFromGrid(grid, playerCharacter);
+			PutPlayerInAvailablePositionFromGrid(grid, enemyCharacter);
 			
 			allPlayers.Add(playerCharacter);
 			allPlayers.Add(enemyCharacter);
@@ -33,16 +31,22 @@ namespace AutoBattle
 			// Making the first one to move be random
 			allPlayers = allPlayers.Shuffle();
 
+			grid.DrawBattlefield();
 			do
 			{
-				grid.DrawBattlefield();
+				WaitInputToNextTurn();
+				
+				var hasAnyCharacterMoved = false;
 				foreach (var character in allPlayers)
 				{
-					character.StartTurn(grid);
+					hasAnyCharacterMoved |= character.ApplyTurn(grid);
+				}
+
+				if (hasAnyCharacterMoved)
+				{
+					grid.DrawBattlefield();
 				}
 				currentTurn++;
-				
-				WaitInputToNextTurn();
 			} while (!HasGameFinished());
 			
 			void WaitInputToNextTurn()
@@ -82,11 +86,7 @@ namespace AutoBattle
 		static Character CreatePlayerCharacter(CharacterClass characterClass)
 		{
 			Console.WriteLine($"Player Class Choice: {characterClass}");
-			return new Character(characterClass)
-			{
-				Health = 100,
-				BaseDamage = 20
-			};
+			return new Character(characterClass);
 		}
 
 		static Character CreateEnemyCharacter()
@@ -96,21 +96,10 @@ namespace AutoBattle
 			var possibleClasses = Enum.GetValues(typeof(CharacterClass));
 			var enemyClass = (CharacterClass)possibleClasses.GetValue(rand.Next(possibleClasses.Length))!;
 			Console.WriteLine($"Enemy Class Choice: {enemyClass}");
-			return new Character(enemyClass)
-			{
-				Health = 100,
-				BaseDamage = 20
-			};
+			return new Character(enemyClass);
 		}
 
-		int GetRandomInt(int min, int max)
-		{
-			var rand = new Random();
-			var index = rand.Next(min, max);
-			return index;
-		}
-
-		static GridBox GetAvailablePositionFromGrid(Grid grid)
+		static void PutPlayerInAvailablePositionFromGrid(Grid grid, Character character)
 		{
 			var rand = new Random();
 			// TODO remove infinite loop
@@ -119,10 +108,12 @@ namespace AutoBattle
 				var random = rand.Next(grid.grids.Count);
 				var randomLocation = grid.grids.ElementAt(random);
 				Console.Write($"{random}{Environment.NewLine}");
-				if (!randomLocation.Occupied)
-				{
-					return randomLocation;
-				}
+				
+				if (randomLocation.Occupied) continue;
+				
+				randomLocation.Occupied = true;
+				character.CurrentBox = randomLocation;
+				return;
 			}
 		}
 	}
