@@ -16,27 +16,25 @@ namespace AutoBattle
 		{
 			lineCount = lines;
 			columnCount = columns;
-			Console.WriteLine($"The battle field has been created{Environment.NewLine}");
 			for (var i = 0; i < lines; i++)
 			{
 				for (var j = 0; j < columns; j++)
 				{
 					var newBox = new GridBox(j, i, false, columns * i + j);
 					grids.Add(newBox);
-					Console.WriteLine($"{newBox.Index}");
 				}
 			}
+			Console.WriteLine($"The battle field has been created");
 		}
 
 		// prints the matrix that indicates the tiles of the battlefield
 		public void DrawBattlefield()
 		{
-			Console.Clear();
 			for (var i = 0; i < lineCount; i++)
 			{
 				for (var j = 0; j < columnCount; j++)
 				{
-					Console.Write(grids[columnCount * i + j].Occupied ? "[X]\t" : "[ ]\t");
+					Console.Write($"[{grids[columnCount * i + j].CharacterInitial}]\t");
 				}
 				Console.Write(Environment.NewLine + Environment.NewLine);
 			}
@@ -46,28 +44,16 @@ namespace AutoBattle
 		public bool AreNeighboursOccupied(GridBox box)
 		{
 			var hasLeftIndex = box.Index % columnCount != 0;
-			if (hasLeftIndex && grids[box.Index - 1].Occupied)
-			{
-				return true;
-			}
+			if (hasLeftIndex && grids[box.Index - 1].Occupied) return true;
 			
 			var hasRightIndex = box.Index % columnCount != columnCount - 1;
-			if (hasRightIndex && grids[box.Index + 1].Occupied)
-			{
-				return true;
-			}
+			if (hasRightIndex && grids[box.Index + 1].Occupied) return true;
 			
-			var hasIndexAbove = box.Index >= lineCount;
-			if (hasIndexAbove && grids[box.Index - lineCount].Occupied)
-			{
-				return true;
-			}
+			var hasIndexAbove = box.Index >= columnCount;
+			if (hasIndexAbove && grids[box.Index - columnCount].Occupied) return true;
 			
 			var hasIndexBelow = box.Index < (lineCount - 1) * columnCount;
-			if (hasIndexBelow && grids[box.Index + lineCount].Occupied)
-			{
-				return true;
-			}
+			if (hasIndexBelow && grids[box.Index + columnCount].Occupied) return true;
 
 			return false;
 		}

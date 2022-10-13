@@ -9,10 +9,9 @@ namespace AutoBattle
 	{
 		static void Main(string[] args)
 		{
-			var grid = new Grid(5, 5);
+			var grid = new Grid(8, 8);
 			var allPlayers = new List<Character>();
 			var currentTurn = 0;
-			var numberOfPossibleTiles = grid.grids.Count;
 			
 			var characterClass = GetPlayerChoice();
 			var playerCharacter = CreatePlayerCharacter(characterClass);
@@ -28,10 +27,10 @@ namespace AutoBattle
 			allPlayers.Add(playerCharacter);
 			allPlayers.Add(enemyCharacter);
 			
-			// Making the first one to move be random
+			// Making the first one to move/attack be random
 			allPlayers = allPlayers.Shuffle();
-
 			grid.DrawBattlefield();
+
 			do
 			{
 				WaitInputToNextTurn();
@@ -41,19 +40,29 @@ namespace AutoBattle
 				{
 					hasAnyCharacterMoved |= character.ApplyTurn(grid);
 				}
-
+				
 				if (hasAnyCharacterMoved)
 				{
 					grid.DrawBattlefield();
 				}
+				
 				currentTurn++;
 			} while (!HasGameFinished());
+
+			if (playerCharacter.HasDied)
+			{
+				Console.WriteLine($"Player {enemyCharacter.Name} has won the game!");
+			}
+			else
+			{
+				Console.WriteLine($"Player {playerCharacter.Name} has won the game!");
+			}
 			
 			void WaitInputToNextTurn()
 			{
-				Console.Write(Environment.NewLine + Environment.NewLine);
-				Console.WriteLine($"Click on any key to start the next turn (currently on {currentTurn})...{Environment.NewLine}");
-				Console.Write(Environment.NewLine + Environment.NewLine);
+				Console.WriteLine();
+				Console.WriteLine($"Click on any key to start the next turn (currently on {currentTurn})...");
+				Console.WriteLine();
 				_ = Console.ReadKey();
 			}
 
@@ -68,7 +77,7 @@ namespace AutoBattle
 			while (true)
 			{
 				//asks for the player to choose between for possible classes via console.
-				Console.WriteLine($"Choose Between One of this Classes:{Environment.NewLine}");
+				Console.WriteLine("Choose Between One of this Classes:");
 				Console.WriteLine("[1] Paladin, [2] Warrior, [3] Cleric, [4] Archer");
 				//store the player choice in a variable
 				var typedClass = Console.ReadLine();
@@ -86,7 +95,10 @@ namespace AutoBattle
 		static Character CreatePlayerCharacter(CharacterClass characterClass)
 		{
 			Console.WriteLine($"Player Class Choice: {characterClass}");
-			return new Character(characterClass);
+			return new Character(characterClass)
+			{
+				Name = "Clark Kent"
+			};
 		}
 
 		static Character CreateEnemyCharacter()
@@ -96,7 +108,10 @@ namespace AutoBattle
 			var possibleClasses = Enum.GetValues(typeof(CharacterClass));
 			var enemyClass = (CharacterClass)possibleClasses.GetValue(rand.Next(possibleClasses.Length))!;
 			Console.WriteLine($"Enemy Class Choice: {enemyClass}");
-			return new Character(enemyClass);
+			return new Character(enemyClass)
+			{
+				Name = "Lex Luthor"
+			};
 		}
 
 		static void PutPlayerInAvailablePositionFromGrid(Grid grid, Character character)
@@ -107,12 +122,10 @@ namespace AutoBattle
 			{
 				var random = rand.Next(grid.grids.Count);
 				var randomLocation = grid.grids.ElementAt(random);
-				Console.Write($"{random}{Environment.NewLine}");
 				
 				if (randomLocation.Occupied) continue;
 				
-				randomLocation.Occupied = true;
-				character.CurrentBox = randomLocation;
+				character.WalkTo(grid, randomLocation.Index);
 				return;
 			}
 		}
