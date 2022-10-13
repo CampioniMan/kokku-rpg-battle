@@ -40,6 +40,7 @@ This is a description of which code-related changes I think are important to tal
 	- I decided to remove both 'CharacterClassSpecific' and 'CharacterSkills' since these classes define features in a very detailed way, but they're not gonna be implemented by now, so there's no need to maintain those definitions;
 	- Added an initial for the character in question so it's possible to figure out which character is the player and which one is the enemy;
 5. Generally
+    - I added the 8 direction move functionality; 
     - I decided not to use Linq since I'm using .NET 3.1 and I'm not sure if Linq has its newest optimizations already implemented in this specific version;
 
 

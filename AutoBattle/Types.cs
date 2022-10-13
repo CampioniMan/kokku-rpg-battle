@@ -1,4 +1,6 @@
-﻿namespace AutoBattle
+﻿using System;
+
+namespace AutoBattle
 {
 	public static class Types
 	{
@@ -29,5 +31,19 @@
 			Cleric = 3,
 			Archer = 4
 		}
+		
+		public enum PossibleDirection : byte
+		{
+			UpperLeft = 1,
+			Up = 2,
+			UpperRight = 3,
+			Left = 4,
+			Right = 5,
+			LowerLeft = 6,
+			Down = 7,
+			LowerRight = 8
+		}
+		
+		public static PossibleDirection[] PossibleDirections = (PossibleDirection[]) Enum.GetValues(typeof(PossibleDirection));
 	}
 }

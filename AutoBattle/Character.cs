@@ -74,7 +74,7 @@ namespace AutoBattle
 			return true;
 		}
 
-		public void WalkTo(Grid battlefield, int index)
+		public void WalkTo(GridBox nextBox)
 		{
 			if (CurrentBox != null)
 			{
@@ -82,7 +82,7 @@ namespace AutoBattle
 				CurrentBox.CharacterInitial = GridBox.EMPTY_CHARACTER_INITIAL;
 			}
 
-			CurrentBox = battlefield.grids[index];
+			CurrentBox = nextBox;
 			CurrentBox.CharacterInitial = Initial;
 			CurrentBox.Occupied = true;
 		}
@@ -103,36 +103,33 @@ namespace AutoBattle
 			}
 			
 			// if there is no target close enough, calculates in which direction this character should move
-			// to be closer to a possible target
-			if (CurrentBox.lineIndex > Target.CurrentBox.lineIndex)
-			{
-				WalkTo(battlefield, CurrentBox.Index - 1);
-				Console.WriteLine($"{Name} walked left");
-				return true;
-			}
-			
-			if (CurrentBox.lineIndex < Target.CurrentBox.lineIndex)
-			{
-				WalkTo(battlefield, CurrentBox.Index + 1);
-				Console.WriteLine($"{Name} walked right");
-				return true;
-			}
+			// to be closer to a possible target. Variable 'nextBox' should never be null in this situation.
+			var directionToMove = GetTargetsDirection();
+			battlefield.TryGetNeighbour(CurrentBox, directionToMove, out var nextBox);
+			WalkTo(nextBox);
+			return true;
+		}
 
-			if (CurrentBox.columnIndex > Target.CurrentBox.columnIndex)
-			{
-				WalkTo(battlefield, CurrentBox.Index - battlefield.columnCount);
-				Console.WriteLine($"{Name} walked up");
-				return true;
-			}
+		PossibleDirection GetTargetsDirection()
+		{
+			var shouldMoveLeft = CurrentBox.lineIndex > Target.CurrentBox.lineIndex;
+			var shouldMoveRight = CurrentBox.lineIndex < Target.CurrentBox.lineIndex;
+			var shouldMoveUp = CurrentBox.columnIndex > Target.CurrentBox.columnIndex;
+			var shouldMoveDown = CurrentBox.columnIndex < Target.CurrentBox.columnIndex;
 
-			if (CurrentBox.columnIndex < Target.CurrentBox.columnIndex)
+			if (shouldMoveLeft)
 			{
-				WalkTo(battlefield, CurrentBox.Index + battlefield.columnCount);
-				Console.WriteLine($"{Name} walked down");
-				return true;
+				if (shouldMoveUp) return PossibleDirection.UpperLeft;
+				if (shouldMoveDown) return PossibleDirection.LowerLeft;
+				return PossibleDirection.Left;
 			}
-
-			return false;
+			if (shouldMoveRight)
+			{
+				if (shouldMoveUp) return PossibleDirection.UpperRight;
+				if (shouldMoveDown) return PossibleDirection.LowerRight;
+				return PossibleDirection.Right;
+			}
+			return shouldMoveUp ? PossibleDirection.Up : PossibleDirection.Down;
 		}
 
 		void Attack(Character target)

@@ -9,7 +9,7 @@ namespace AutoBattle
 	{
 		static void Main(string[] args)
 		{
-			var grid = new Grid(8, 8);
+			var grid = new Grid(20, 20);
 			var allPlayers = new List<Character>();
 			var currentTurn = 0;
 			
@@ -125,7 +125,7 @@ namespace AutoBattle
 				
 				if (randomLocation.Occupied) continue;
 				
-				character.WalkTo(grid, randomLocation.Index);
+				character.WalkTo(randomLocation);
 				return;
 			}
 		}
