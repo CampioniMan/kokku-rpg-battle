@@ -97,9 +97,9 @@ namespace AutoBattle
 		static Character CreateEnemyCharacter()
 		{
 			//randomly choose the enemy class and set up vital variables
-			var rand = new Random();
 			var possibleClasses = Enum.GetValues(typeof(CharacterClass));
-			var enemyClass = (CharacterClass)possibleClasses.GetValue(rand.Next(possibleClasses.Length))!;
+			var enemyClass = (CharacterClass)possibleClasses.GetValue(
+				ExtensionsUtils.RandomGenerator.Next(possibleClasses.Length))!;
 			Console.WriteLine($"Enemy Class Choice: {enemyClass}");
 			return new Character(enemyClass)
 			{
@@ -110,10 +110,11 @@ namespace AutoBattle
 		static void PuPlayerOnGrid(Character character, Grid battlefield)
 		{
 			if (battlefield.AvailableBoxIndexes.Count == 0)
+			{
 				throw new Exception("There are not enough available spaces on the battlefield for a player to join");
-			
-			var rand = new Random();
-			var random = rand.Next(battlefield.AvailableBoxIndexes.Count);
+			}
+
+			var random = ExtensionsUtils.RandomGenerator.Next(battlefield.AvailableBoxIndexes.Count);
 			var randomLocation = battlefield.AvailableBoxIndexes[random];
 			character.WalkTo(battlefield, battlefield.Grids[randomLocation]);
 		}
@@ -121,10 +122,10 @@ namespace AutoBattle
 
 	internal static class ExtensionsUtils
 	{
+		public static readonly Random RandomGenerator = new Random();
 		public static List<T> Shuffle<T>(this List<T> list)
 		{
-			var rng = new Random();
-			return list.OrderBy(a => rng.Next()).ToList();
+			return list.OrderBy(a => RandomGenerator.Next()).ToList();
 		}
 	}
 }
