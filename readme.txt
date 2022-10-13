@@ -26,7 +26,7 @@ This is a description of which code-related changes I think are important to tal
 	- Changed 'CreateEnemyCharacter()' so there's no need to change this function in the future if more classes are added or removed from the CharacterClass enum;
 	- Removed both 'GetPlayerPosition()' and 'GetEnemyPosition()' and replaced them with 'GetAvailablePositionFromGrid()' which is a generic implementation for its purpose;
 	- Replaced the usages of '\n' to 'Environment.NewLine';
-	- Added a 'ExtensionsUtils' static class so I could add some generic extra methods if needed;
+	- Added a 'ExtensionsUtils' static class so I could add some generic extra methods/variables when needed;
 2. Then I changed the 'Grid' class to make it work and to also be more generic:
 	- Modified 'DrawBattlefield()' so it uses the grid information from the specific instance;
 3. About the 'Character' class
