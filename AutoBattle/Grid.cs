@@ -9,33 +9,35 @@ namespace AutoBattle
 {
 	public class Grid
 	{
-		public List<GridBox> grids = new List<GridBox>();
-		public readonly int lineCount;
-		public readonly int columnCount;
+		public readonly List<GridBox> Grids = new List<GridBox>();
+		public List<int> AvailableBoxIndexes = new List<int>();
+		public readonly int LineCount;
+		public readonly int ColumnCount;
 		
 		public Grid(int lines, int columns)
 		{
-			lineCount = lines;
-			columnCount = columns;
+			LineCount = lines;
+			ColumnCount = columns;
 			for (var i = 0; i < lines; i++)
 			{
 				for (var j = 0; j < columns; j++)
 				{
 					var newBox = new GridBox(j, i, false, columns * i + j);
-					grids.Add(newBox);
+					Grids.Add(newBox);
+					AvailableBoxIndexes.Add(newBox.Index);
 				}
 			}
-			Console.WriteLine($"The battle field has been created");
+			Console.WriteLine("The battle field has been created");
 		}
 
 		// prints the matrix that indicates the tiles of the battlefield
 		public void DrawBattlefield()
 		{
-			for (var i = 0; i < lineCount; i++)
+			for (var i = 0; i < LineCount; i++)
 			{
-				for (var j = 0; j < columnCount; j++)
+				for (var j = 0; j < ColumnCount; j++)
 				{
-					Console.Write($"[{grids[columnCount * i + j].CharacterInitial}]\t");
+					Console.Write($"[{Grids[ColumnCount * i + j].CharacterInitial}]\t");
 				}
 				Console.Write(Environment.NewLine + Environment.NewLine);
 			}
@@ -60,15 +62,15 @@ namespace AutoBattle
 			{
 				case PossibleDirection.UpperLeft:
 					hasNeighbour = BoxHasUpwardsNeighbour(position) && BoxHasLeftNeighbour(position);
-					neighbourPosition = position.Index - columnCount - 1;
+					neighbourPosition = position.Index - ColumnCount - 1;
 					break;
 				case PossibleDirection.Up:
 					hasNeighbour = BoxHasUpwardsNeighbour(position);
-					neighbourPosition = position.Index - columnCount;
+					neighbourPosition = position.Index - ColumnCount;
 					break;
 				case PossibleDirection.UpperRight:
 					hasNeighbour = BoxHasUpwardsNeighbour(position) && BoxHasRightNeighbour(position);
-					neighbourPosition = position.Index - columnCount + 1;
+					neighbourPosition = position.Index - ColumnCount + 1;
 					break;
 				case PossibleDirection.Left:
 					hasNeighbour = BoxHasLeftNeighbour(position);
@@ -80,21 +82,21 @@ namespace AutoBattle
 					break;
 				case PossibleDirection.LowerLeft:
 					hasNeighbour = BoxHasDownwardsNeighbour(position) && BoxHasLeftNeighbour(position);
-					neighbourPosition = position.Index + columnCount - 1;
+					neighbourPosition = position.Index + ColumnCount - 1;
 					break;
 				case PossibleDirection.Down:
 					hasNeighbour = BoxHasDownwardsNeighbour(position);
-					neighbourPosition = position.Index + columnCount;
+					neighbourPosition = position.Index + ColumnCount;
 					break;
 				case PossibleDirection.LowerRight:
 					hasNeighbour = BoxHasDownwardsNeighbour(position) && BoxHasRightNeighbour(position);
-					neighbourPosition = position.Index + columnCount + 1;
+					neighbourPosition = position.Index + ColumnCount + 1;
 					break;
 			}
 			
 			if (hasNeighbour)
 			{
-				neighbour = grids[neighbourPosition];
+				neighbour = Grids[neighbourPosition];
 				return true;
 			}
 
@@ -104,22 +106,22 @@ namespace AutoBattle
 
 		bool BoxHasLeftNeighbour(GridBox box)
 		{
-			return box.Index % columnCount != 0;
+			return box.Index % ColumnCount != 0;
 		}
 		
 		bool BoxHasRightNeighbour(GridBox box)
 		{
-			return box.Index % columnCount != columnCount - 1;
+			return box.Index % ColumnCount != ColumnCount - 1;
 		}
 		
 		bool BoxHasUpwardsNeighbour(GridBox box)
 		{
-			return box.Index >= columnCount;
+			return box.Index >= ColumnCount;
 		}
 		
 		bool BoxHasDownwardsNeighbour(GridBox box)
 		{
-			return box.Index < (lineCount - 1) * columnCount;
+			return box.Index < (LineCount - 1) * ColumnCount;
 		}
 	}
 }

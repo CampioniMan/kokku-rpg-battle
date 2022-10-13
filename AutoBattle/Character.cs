@@ -62,29 +62,30 @@ namespace AutoBattle
 			Class = characterClass;
 		}
 
-		bool TakeDamage(float amount)
+		void TakeDamage(float amount)
 		{
 			if (!((Health -= amount) <= 0))
 			{
 				Console.WriteLine($"{Name} took {amount} damage ({Health} health left)");
-				return false;
+				return;
 			}
 			
 			Console.WriteLine($"{Name} took {amount} damage and died");
-			return true;
 		}
 
-		public void WalkTo(GridBox nextBox)
+		public void WalkTo(Grid battlefield, GridBox nextBox)
 		{
 			if (CurrentBox != null)
 			{
 				CurrentBox.Occupied = false;
 				CurrentBox.CharacterInitial = GridBox.EMPTY_CHARACTER_INITIAL;
+				battlefield.AvailableBoxIndexes.Add(CurrentBox.Index);
 			}
 
 			CurrentBox = nextBox;
 			CurrentBox.CharacterInitial = Initial;
 			CurrentBox.Occupied = true;
+			battlefield.AvailableBoxIndexes.Remove(CurrentBox.Index);
 		}
 
 		/**
@@ -106,7 +107,7 @@ namespace AutoBattle
 			// to be closer to a possible target. Variable 'nextBox' should never be null in this situation.
 			var directionToMove = GetTargetsDirection();
 			battlefield.TryGetNeighbour(CurrentBox, directionToMove, out var nextBox);
-			WalkTo(nextBox);
+			WalkTo(battlefield, nextBox);
 			return true;
 		}
 
@@ -134,7 +135,6 @@ namespace AutoBattle
 
 		void Attack(Character target)
 		{
-			Console.WriteLine($"{Name} will attack {Target.Name}");
 			target.TakeDamage(GetRandomDamage());
 		}
 		

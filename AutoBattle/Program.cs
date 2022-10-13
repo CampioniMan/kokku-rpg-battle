@@ -9,20 +9,22 @@ namespace AutoBattle
 	{
 		static void Main(string[] args)
 		{
-			var grid = new Grid(20, 20);
+			var grid = new Grid(10, 10);
 			var allPlayers = new List<Character>();
 			var currentTurn = 0;
 			
 			var characterClass = GetPlayerChoice();
-			var playerCharacter = CreatePlayerCharacter(characterClass);
+			var playerCharacter = new Character(characterClass)
+			{
+				Name = "Clark Kent"
+			};
 			var enemyCharacter = CreateEnemyCharacter();
+
+			PuPlayerOnGrid(playerCharacter, grid);
+			PuPlayerOnGrid(enemyCharacter, grid);
 			
-			//populates the character variables and targets
 			enemyCharacter.Target = playerCharacter;
 			playerCharacter.Target = enemyCharacter;
-			
-			PutPlayerInAvailablePositionFromGrid(grid, playerCharacter);
-			PutPlayerInAvailablePositionFromGrid(grid, enemyCharacter);
 			
 			allPlayers.Add(playerCharacter);
 			allPlayers.Add(enemyCharacter);
@@ -92,15 +94,6 @@ namespace AutoBattle
 			}
 		}
 
-		static Character CreatePlayerCharacter(CharacterClass characterClass)
-		{
-			Console.WriteLine($"Player Class Choice: {characterClass}");
-			return new Character(characterClass)
-			{
-				Name = "Clark Kent"
-			};
-		}
-
 		static Character CreateEnemyCharacter()
 		{
 			//randomly choose the enemy class and set up vital variables
@@ -114,20 +107,15 @@ namespace AutoBattle
 			};
 		}
 
-		static void PutPlayerInAvailablePositionFromGrid(Grid grid, Character character)
+		static void PuPlayerOnGrid(Character character, Grid battlefield)
 		{
+			if (battlefield.AvailableBoxIndexes.Count == 0)
+				throw new Exception("There are not enough available spaces on the battlefield for a player to join");
+			
 			var rand = new Random();
-			// TODO remove infinite loop
-			while (true)
-			{
-				var random = rand.Next(grid.grids.Count);
-				var randomLocation = grid.grids.ElementAt(random);
-				
-				if (randomLocation.Occupied) continue;
-				
-				character.WalkTo(randomLocation);
-				return;
-			}
+			var random = rand.Next(battlefield.AvailableBoxIndexes.Count);
+			var randomLocation = battlefield.AvailableBoxIndexes[random];
+			character.WalkTo(battlefield, battlefield.Grids[randomLocation]);
 		}
 	}
 
